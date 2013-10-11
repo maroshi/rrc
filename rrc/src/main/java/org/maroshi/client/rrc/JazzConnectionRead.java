@@ -41,13 +41,13 @@ import org.maroshi.client.util.CliOptionsBuilder;
 import org.maroshi.client.util.LoggerFactory;
 import org.maroshi.client.util.VersionLocator;
 
-public class JazzConnection {
+public class JazzConnectionRead {
 
 	static void display(String msg) {
 		System.out.println(msg);
 	}
 
-	static Logger logger = Logger.getLogger(JazzConnection.class);
+	static Logger logger = Logger.getLogger(JazzConnectionRead.class);
 
 	public static void main(String[] args) {
 		LoggerFactory.config();
@@ -94,11 +94,34 @@ public class JazzConnection {
 					catalogUrl, projectArea);
 			display("-- serviceProviderUrl=" + serviceProviderUrl);
 
-			String folderURI = "https://jazz.net/sandbox01-rm/folders/_pSrDUTDUEeOj1KtREAvjXQ";
-			Requirement req = RequirmentFactory.instance(client,
-					serviceProviderUrl).create("Feature", folderURI, "Demo 20",
-					"Some <b>bold</b>  message and <i>italic</i> as well.");
-			display(req.toString());
+			String systemReqURI = "https://jazz.net/sandbox01-rm/resources/_muLCIjKIEeOj1KtREAvjXQ";
+			Requirement systemReq = new Requirement();
+			ClientResponse getResponse = null;
+			try {
+				getResponse = client.getResource(systemReqURI,
+						OslcMediaType.APPLICATION_RDF_XML);
+				systemReq = getResponse.getEntity(Requirement.class);
+				
+				Map<QName, Object> extendedProperties = systemReq.getExtendedProperties();
+				QName qName = new QName("https://jazz.net/sandbox01-rm/types/","_8E1FoTHjEeOj1KtREAvjXQ");
+				display("qName="+qName.toString());
+				
+				Object property = extendedProperties.get(qName);
+				if (property != null){
+					String msg = property.getClass().getName();
+					display("property.class="+msg);
+					if (property instanceof java.net.URI){
+						java.net.URI uriProperty = (java.net.URI)property;
+						display("uriProperty="+uriProperty.toString());
+					}
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			getResponse.consumeContent();
+
+			display(systemReqURI.toString());
 		} catch (RootServicesException re) { 
 			logger.log(Level.FATAL,
 					"Unable to access the Jazz rootservices document at: "
