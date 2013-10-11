@@ -99,7 +99,7 @@ public class JazzConnection {
 					serviceProviderUrl).create("Feature", folderURI, "Demo 20",
 					"Some <b>bold</b>  message and <i>italic</i> as well.");
 			display(req.toString());
-		} catch (RootServicesException re) {
+		} catch (RootServicesException re) { 
 			logger.log(Level.FATAL,
 					"Unable to access the Jazz rootservices document at: "
 							+ rmContextUrl + "/rootservices", re);
