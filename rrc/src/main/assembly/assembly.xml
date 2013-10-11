@@ -1,0 +1,55 @@
+<assembly>
+	<!-- Generates a zip package containing the needed files -->
+	<id>14</id>
+	<formats>
+		<format>dir</format>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+
+	<!-- Adds dependencies to zip package under lib directory -->
+	<dependencySets>
+		<dependencySet>
+			<!-- Project artifact is not copied under library directory since it is 
+				added to the root directory of the dir package. Copied later-->
+			<outputDirectory>/lib</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>false</unpack>
+		</dependencySet>
+	</dependencySets>
+
+	<fileSets>
+		<!-- Adds startup scripts to the root directory of zip package. The startup 
+			scripts are located to src/main/scripts directory as stated by Maven conventions. -->
+		<fileSet>
+			<directory>${project.build.scriptSourceDirectory}</directory>
+			<outputDirectory>/bin</outputDirectory>
+			<includes>
+				<include>*.bat</include>
+				<include>*.sh</include>
+			</includes>
+		</fileSet>
+<!-- 		adds THE project jar package to the lib directory of deployed package
+		   the programe is invoked with its Main class name. Avoiding the -jar option
+		   which overrides the classpath from the -cp option.
+		   We use -cp option in order to make the class path visible and controlled by the 
+		   operator. -->
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<outputDirectory>/lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+				<!-- Adds config files into the /config directory. -->
+		<fileSet>
+			<directory>${project.build.directory}/../config</directory>
+			<outputDirectory>/config</outputDirectory>
+			<includes>
+				<include>*.ini</include>
+				<include>*.xml</include>
+				<include>*.buildname</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>

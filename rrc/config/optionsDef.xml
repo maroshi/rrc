@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<options>
+	<option>
+		<short>rm</short>
+		<long>conn.site.rm</long>
+		<description>Full URL to RRC
+			application. Example URL=https://jazz.net:9443/sandbox01/rm
+		</description>
+		<hasArgs>true</hasArgs>
+		<argName>URL</argName>
+		<required>true</required>
+	</option>
+	<option>
+		<short>jts</short>
+		<long>conn.site.jts</long>
+		<description>Full URL to JTS
+			application. Example URL=https://jazz.net:9443/sandbox01/jts
+		</description>
+		<hasArgs>true</hasArgs>
+		<argName>URL</argName>
+		<required>true</required>
+	</option>
+	<option>
+		<short>u</short>
+		<long>conn.user</long>
+		<description>Registered user name.</description>
+		<hasArgs>true</hasArgs>
+		<argName>name</argName>
+		<required>true</required>
+	</option>
+	<option>
+		<short>p</short>
+		<long>conn.password</long>
+		<description>Password for registered user.</description>
+		<hasArgs>true</hasArgs>
+		<argName>pswd</argName>
+		<required>true</required>
+	</option>
+	<option>
+		<short>pr</short>
+		<long>conn.projectArea</long>
+		<description>Project Area title, if contains white-spaces put in quotes "prj XX".</description>
+		<hasArgs>true</hasArgs>
+		<argName>PrjArea</argName>
+		<required>true</required>
+	</option>
+	<option>
+		<short>h</short>
+		<long>help</long>
+		<description>Display usage help.</description>
+		<hasArgs>false</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>v</short>
+		<long>version</long>
+		<description>Display current version.</description>
+		<hasArgs>false</hasArgs>
+		<required>false</required>
+	</option>
+	
+</options>
