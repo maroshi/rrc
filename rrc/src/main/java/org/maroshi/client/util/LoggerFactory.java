@@ -17,6 +17,8 @@ public class LoggerFactory {
 	static final public  String DOUBLE_LINE = "================================================================================";
 	static final public  String LINE_START =  "---START------------------------------------------------------------------------";
 	static final public  String LINE_END =    "---END--------------------------------------------------------------------------";
+	static final public  String LINE_TITLE =    "--- ";
+	static final public  String NEW_LINE =    "";
 	static private boolean isInitiated = false;
 	
 	public static void init() {

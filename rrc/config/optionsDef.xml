@@ -46,16 +46,45 @@
 	</option>
 	<option>
 		<short>h</short>
-		<long>help</long>
+		<long>app.help</long>
 		<description>Display usage help.</description>
 		<hasArgs>false</hasArgs>
 		<required>false</required>
 	</option>
 	<option>
 		<short>v</short>
-		<long>version</long>
+		<long>app.version</long>
 		<description>Display current version.</description>
 		<hasArgs>false</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>nl</short>
+		<long>app.noLogo</long>
+		<description>Do not display logo</description>
+		<hasArgs>false</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>f</short>
+		<long>optn.file</long>
+		<description>Comma spareated Options files, located in [.|config|../config|absolute path]. ini file format [option=value]. See sample in config.ini</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+		<argName>f1.opt,f2.opt</argName>
+	</option>
+	<option>
+		<short>ad</short>
+		<long>app.do</long>
+		<description>Action to do on record. One of the following [create|read|update|delete]</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>at</short>
+		<long>app.reqType</long>
+		<description>Requirement type of record (Feature, Use Case, System...). </description>
+		<hasArgs>true</hasArgs>
 		<required>false</required>
 	</option>
 	

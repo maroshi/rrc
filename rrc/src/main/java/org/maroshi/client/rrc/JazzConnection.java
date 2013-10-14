@@ -37,6 +37,7 @@ import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.Service;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
+import org.maroshi.client.activity.Context;
 import org.maroshi.client.util.CliOptionsBuilder;
 import org.maroshi.client.util.LoggerFactory;
 import org.maroshi.client.util.VersionLocator;
@@ -135,6 +136,7 @@ public class JazzConnection {
 					}
 					logger.debug(LoggerFactory.LINE_END);
 				}
+				Context.instance().setCommandLine(cmd);
 			}
 			logCurrentVersion();
 

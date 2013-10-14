@@ -16,7 +16,10 @@ public class Msg {
 
 	public static String getString(String key) {
 		try {
-			return RESOURCE_BUNDLE.getString(key);
+			String retVal =  RESOURCE_BUNDLE.getString(key);
+			if (retVal == null || retVal.length() == 0)
+				throw new MissingResourceException("", BUNDLE_NAME, key);
+			return retVal;
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}
