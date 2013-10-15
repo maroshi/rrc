@@ -116,7 +116,7 @@ public class JazzConnectionRead {
 					}
 				}
 				
-			} catch (IOException e) {
+			} catch (IOException e) {//
 				e.printStackTrace();
 			}
 			getResponse.consumeContent();
