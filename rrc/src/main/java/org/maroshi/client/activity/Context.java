@@ -3,6 +3,7 @@ package org.maroshi.client.activity;
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
+import org.eclipse.lyo.client.oslc.resources.Requirement;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 
 public class Context {
@@ -17,6 +18,8 @@ public class Context {
 	private String serviceProviderUrl = null;
 	private String requirementFactoryUrl = null;
 	private ResourceShape requirementInstanceShape = null;
+	private String[] instanceShapesTitleStrArr = null;
+	private Requirement requirement = null;
 
 
 	public static Context instance() {
@@ -89,6 +92,30 @@ public class Context {
 
 	public void setRequirementInstanceShapeUrl(ResourceShape requirmentInstanceShape) {
 		this.requirementInstanceShape = requirmentInstanceShape;
+	}
+
+	public ResourceShape getRequirementInstanceShape() {
+		return requirementInstanceShape;
+	}
+
+	public void setRequirementInstanceShape(ResourceShape requirementInstanceShape) {
+		this.requirementInstanceShape = requirementInstanceShape;
+	}
+
+	public String[] getInstanceShapesTitleStrArr() {
+		return instanceShapesTitleStrArr;
+	}
+
+	public void setInstanceShapesTitleStrArr(String[] instanceShapesTitleStrArr) {
+		this.instanceShapesTitleStrArr = instanceShapesTitleStrArr;
+	}
+
+	public Requirement getRequirement() {
+		return requirement;
+	}
+
+	public void setRequirement(Requirement requirement) {
+		this.requirement = requirement;
 	}
 
 }

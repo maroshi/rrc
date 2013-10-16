@@ -9,7 +9,7 @@ import org.maroshi.client.util.Msg;
 
 public class DoActivity extends AbstractActivity {
 	static Logger logger = Logger.getLogger(DoActivity.class);
-	static final String optionFlag = Msg.getString("app.init.optionDoFlagLong");
+	static final String doOptionFlag = "app.do";
 
 	public enum DoActivityEnum {
 		CREATE, READ, UPDATE, DELETE, UNDEFINED
@@ -21,15 +21,16 @@ public class DoActivity extends AbstractActivity {
 	@Override
 	public void init() {
 		super.init();
-		optionVal = getContext().getCommandLine().getOptionValue(optionFlag);
+		optionVal = readOptionValue(doOptionFlag);
 		if (optionVal.length() == 0) {
-			logger.error("Missing option value for: --" + optionFlag);
+			logger.error("Missing option value for: --" + doOptionFlag);
 			logger.error("Acceptable option value: create | read | update | delete");
 		}
 	}
 
 	@Override
 	public String execute() {
+		String retVal = ActivityConstants.EXE_SUCCESS;
 		if (optionVal.length() == 0)
 			return ActivityConstants.EXE_FAIL;
 
@@ -44,24 +45,31 @@ public class DoActivity extends AbstractActivity {
 			doActivityEnum = DoActivityEnum.DELETE;
 		} else {
 			doActivityEnum = DoActivityEnum.UNDEFINED;
-			logger.error("Illegal option value: --" + optionFlag + "="
+			logger.error("Illegal option value: --" + doOptionFlag + "="
 					+ optionVal);
 			logger.error("Acceptable option value: create | read | update | delete");
-			return ActivityConstants.EXE_FAIL;
+			retVal = ActivityConstants.EXE_FAIL;
 		}
 		getContext().setDoCommand(doActivityEnum);
-		return ActivityConstants.EXE_SUCCESS;
+		return retVal;
 	}
 
 	@Override
 	public void planNextActivity() {
 		if (optionVal.length() == 0)
 			return;
+		if (doActivityEnum == DoActivityEnum.UNDEFINED)
+			return;
 
 		super.planNextActivity();
-		if (doActivityEnum != DoActivityEnum.READ) {
-			AbstractActivity reqTypeActivity = new ReqTypeActivty();
-			getSchedule().add(reqTypeActivity);
+		if (doActivityEnum != DoActivityEnum.READ ) {
+			if (hasOption(ConnectingToJazzActivty.reqTypeOptionFlag)){
+				AbstractActivity reqTypeActivity = new ConnectingToJazzActivty();
+				getSchedule().add(reqTypeActivity);				
+			}else {
+				logger.error("Missing option value for: --" + ConnectingToJazzActivty.reqTypeOptionFlag);
+				
+			}
 		}
 	}
 

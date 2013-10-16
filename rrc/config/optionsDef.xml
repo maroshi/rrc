@@ -87,5 +87,27 @@
 		<hasArgs>true</hasArgs>
 		<required>false</required>
 	</option>
+
+	<option>
+		<short>qt</short>
+		<long>req.title</long>
+		<description>Requirement title text.</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>qc</short>
+		<long>req.content</long>
+		<description>Requirement content text. May contain XHTML tags</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>qd</short>
+		<long>req.desc</long>
+		<description>Requirement description text.</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
 	
 </options>

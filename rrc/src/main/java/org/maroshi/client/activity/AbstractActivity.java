@@ -63,11 +63,22 @@ public abstract class AbstractActivity {
 
 	protected boolean isValidOptionValue(String optFlg) {
 		boolean retVal = true;
-		String optionVal = getContext().getCommandLine().getOptionValue(optFlg);
+		String optionVal = readOptionValue(optFlg);
+		if (optionVal == null)
+			return false;
 		if (optionVal.length() == 0) {
 			logger.error("Missing option value for: --" + optFlg);
 			retVal = false;
 		}
 		return retVal;
+	}
+	protected String readOptionValue(String optFlg) {
+		String valueStr = getContext().getCommandLine().getOptionValue(optFlg);
+		if (valueStr == null)
+			return null;
+		return valueStr.trim();
+	}
+	protected boolean hasOption(String optFlag){
+		return context.getCommandLine().hasOption(optFlag);
 	}
 }

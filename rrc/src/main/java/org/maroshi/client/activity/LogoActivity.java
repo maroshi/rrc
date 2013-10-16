@@ -8,6 +8,8 @@ import org.maroshi.client.util.VersionLocator;
 
 public class LogoActivity extends AbstractActivity{
 	static Logger logger = Logger.getLogger(LogoActivity.class);
+	static final String versionOptionFlag = Msg.getString("app.init.optionVersionFlagLong");
+	static final String  noLogoOptionFlag = Msg.getString("app.init.optionNoLogoFlagLong");
 	
 	@Override
 	public String execute() {
@@ -15,13 +17,13 @@ public class LogoActivity extends AbstractActivity{
 		String logo = VersionLocator.getVersion();
 		StringBuffer actualCommandLine = new StringBuffer("rrc1 ");
 		// display version only
-		if (getContext().getCommandLine().hasOption(Msg.getString("app.init.optionVersionFlagLong"))){
+		if (hasOption(versionOptionFlag)){
 			logger.info("version: "+logo);
 			logger.info("");
 			return ActivityConstants.EXE_SUCCESS;			
 		}
 		// skip is no log option is present
-		if (getContext().getCommandLine().hasOption(Msg.getString("app.init.optionNoLogoFlagLong"))){
+		if (hasOption(noLogoOptionFlag)){
 			return ActivityConstants.EXE_SUCCESS;			
 		}
 		
@@ -49,10 +51,13 @@ public class LogoActivity extends AbstractActivity{
 	@Override
 	public void planNextActivity() {
 		super.planNextActivity();
-		if (getContext().getCommandLine().hasOption(Msg.getString("app.init.optionDoFlagLong"))){
+		if (hasOption(DoActivity.doOptionFlag)){
 			DoActivity doActivity = new DoActivity();
 			getSchedule().add(doActivity);
 			logger.debug(LoggerFactory.LINE_TITLE+"to -> "+doActivity.getClass().getName());
+		}
+		else{
+			logger.error("Missing required option --"+DoActivity.doOptionFlag);
 		}
 	}
 
