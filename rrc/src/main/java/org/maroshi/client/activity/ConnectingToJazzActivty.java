@@ -130,7 +130,8 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 					reqOslcResourceType, getContext().getJazzClient(),
 					reqTypeOptionVal);
 			getContext()
-					.setRequirementInstanceShapeUrl(requirmentInstanceShape);
+					.setRequirementInstanceShape(requirmentInstanceShape);
+			requirement.setInstanceShape(requirmentInstanceShape.getAbout());
 		} catch (ResourceNotFoundException e) {
 			errorReportUndefinedRequirementType(reqOslcResourceType);
 			e.printStackTrace();

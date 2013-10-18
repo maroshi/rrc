@@ -95,7 +95,7 @@ public class JazzConnection {
 					catalogUrl, projectArea);
 			display("-- serviceProviderUrl=" + serviceProviderUrl);
 
-			String folderURI = "https://jazz.net/sandbox01-rm/folders/_pSrDUTDUEeOj1KtREAvjXQ";
+			String folderURI = "https://jazz.net/sandbox02-rm/folders/_xE5Q0jVmEeOYbalKlkVQRA";
 			Requirement req = RequirmentFactory.instance(client,
 					serviceProviderUrl).create("Feature", folderURI, "Demo 20",
 					"Some <b>bold</b>  message and <i>italic</i> as well.");

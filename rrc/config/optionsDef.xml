@@ -109,5 +109,19 @@
 		<hasArgs>true</hasArgs>
 		<required>false</required>
 	</option>
+	<option>
+		<short>qfu</short>
+		<long>req.folder.URI</long>
+		<description>Requirement's folder URI.</description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>qa</short>
+		<long>req.attr</long>
+		<description>Requirement's attribute. Multi occurring, name=value. Examples priority=low, development stage=plan phase </description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
 	
 </options>

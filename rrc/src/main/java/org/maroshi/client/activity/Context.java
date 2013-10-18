@@ -86,14 +86,6 @@ public class Context {
 		this.requirementFactoryUrl = requirementFactoryUrl;
 	}
 
-	public ResourceShape getRequirementInstanceShapeUrl() {
-		return requirementInstanceShape;
-	}
-
-	public void setRequirementInstanceShapeUrl(ResourceShape requirmentInstanceShape) {
-		this.requirementInstanceShape = requirmentInstanceShape;
-	}
-
 	public ResourceShape getRequirementInstanceShape() {
 		return requirementInstanceShape;
 	}

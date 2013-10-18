@@ -9,6 +9,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
 import org.eclipse.lyo.client.oslc.resources.RmConstants;
+import org.maroshi.client.activity.DoActivity.DoActivityEnum;
+import org.maroshi.client.util.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -83,6 +85,19 @@ public class LoadingTextActivity extends AbstractActivity {
 			logger.debug("Successful assign XHTML content");
 		}
 		return ActivityConstants.EXE_SUCCESS;
+	}
+
+	@Override
+	public void planNextActivity() {
+		if (getContext().getExecutionResult() == ActivityConstants.EXE_FAIL)
+			return;
+		super.planNextActivity();
+		if (getContext().getDoCommand() == DoActivityEnum.CREATE) {
+			LoadingFolderActivity loadingFolderActivity = new LoadingFolderActivity();
+			getSchedule().add(loadingFolderActivity);
+			logger.debug(LoggerFactory.LINE_TITLE + "to -> "
+					+ loadingFolderActivity.getClass().getName());
+		}
 	}
 
 	private static Element convertStringToXHTML(String text) {
