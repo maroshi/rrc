@@ -2,8 +2,10 @@ package org.maroshi.client.rrc;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Formatter;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import net.oauth.OAuthException;
 
@@ -16,10 +18,14 @@ import org.eclipse.lyo.client.exception.RootServicesException;
 import org.eclipse.lyo.client.oslc.OSLCConstants;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.jazz.JazzRootServicesHelper;
+import org.maroshi.client.model.Property;
 import org.maroshi.client.util.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -29,21 +35,33 @@ public class InstanceShapeInterrogation {
 	static Logger logger = Logger.getLogger(InstanceShapeInterrogation.class);
 	private Model rdfModel = null;
 	private JazzFormAuthClient client = null;
-	
+	private ArrayList<Resource> shapePropertiesResourceArr = new ArrayList<Resource>();
+
+	private org.maroshi.client.model.ResourceShape resourceShape = null;
+
 	public InstanceShapeInterrogation(JazzFormAuthClient client) {
 		this.client = client;
 	}
 
-	private Model loadModelForInstanceShape(String urlString){
+	private Model loadModelForInstanceShape(String urlString) {
 		if (client == null)
 			return null;
-		
+
 		ClientResponse response;
 		try {
-			response = client.getResource(urlString,OSLCConstants.CT_RDF);
+			// read RDF document into model
+			response = client.getResource(urlString, OSLCConstants.CT_RDF);
 			InputStream is = response.getEntity(InputStream.class);
 			rdfModel = ModelFactory.createDefaultModel();
-			rdfModel.read(is,urlString);
+			rdfModel.read(is, urlString);
+			response.consumeContent();
+
+			// read RDF document into ResourceShape object with LYO
+			response = client.getResource(urlString, OSLCConstants.CT_RDF);
+			resourceShape = response
+					.getEntity(org.maroshi.client.model.ResourceShape.class);
+			response.consumeContent();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (OAuthException e) {
@@ -53,18 +71,202 @@ public class InstanceShapeInterrogation {
 		}
 		return rdfModel;
 	}
-	public void dumpAllStatements(){
-		StmtIterator itr = rdfModel.listStatements();
-		int count = 1;
+
+	private Resource findFirstObjectFor(Resource r,
+			com.hp.hpl.jena.rdf.model.Property p) {
+		StmtIterator itr = rdfModel.listStatements(r, p, null, null);
 		while (itr.hasNext()) {
-			Statement currStm = (Statement) itr.next();
-			
-			Formatter f = new Formatter();
-			f.format("Statement[%1$03d]: %2$s", count, currStm.toString());
-			logger.info(f.toString());
-			f.close();
-			count++;			
+			Statement statement = (Statement) itr.next();
+			Resource rdfObject = (Resource) statement.getObject();
+			return rdfObject;
 		}
+		return null;
+	}
+
+	public void identifyEnumeratedAttributes() {
+		com.hp.hpl.jena.rdf.model.Property allowedValuedPrp = rdfModel
+				.createProperty(OSLCConstants.OSLC_V2 + "allowedValues");
+		com.hp.hpl.jena.rdf.model.Property propDefPrp = rdfModel
+				.createProperty(OSLCConstants.OSLC_V2 + "propertyDefinition");
+		com.hp.hpl.jena.rdf.model.Property rangePrp = rdfModel
+				.createProperty(OSLCConstants.OSLC_V2 + "range");
+
+		// process all RDF triples with allowedValuedPrp
+		StmtIterator itr = rdfModel.listStatements(null, allowedValuedPrp,
+				null, null);
+		Hashtable<String, Hashtable<String, String>> identifiedEnumerationHash = new Hashtable<String, Hashtable<String, String>>();
+		while (itr.hasNext()) { //each RDF triple with allowedValuedPrp
+			Statement rdfStatement = (Statement) itr.next();
+			Resource rdfSubject = rdfStatement.getSubject();
+			Hashtable<String, String> currEnumeration = getEnumeratedValues_Hash(
+					rangePrp, identifiedEnumerationHash, rdfStatement,
+					rdfSubject);
+
+			// identify the attribute pNode (as the RDF triplet subject)
+			// query the propertyDefinition with RDF query
+			Resource enumeratedAttributeURI_rdfRsource = rdfSubject
+					.getPropertyResourceValue(propDefPrp);
+			storeEnumeratedValuesHashInto_ResourceShape(propDefPrp, rdfSubject,
+					currEnumeration, enumeratedAttributeURI_rdfRsource);
+		}
+	}
+
+	private void storeEnumeratedValuesHashInto_ResourceShape(
+			com.hp.hpl.jena.rdf.model.Property propDefPrp, Resource rdfSubject,
+			Hashtable<String, String> enumeratedValues_Hash, Resource attribId) {
+		if (attribId != null) {
+			logger.debug("Assigned enumerated values to attrib: " + attribId.getURI());
+			URI attribURI = null;
+			try {
+				attribURI = new URI(attribId.getURI());
+			} catch (URISyntaxException e) {
+				e.printStackTrace();// cannot happen since attribId is
+									// defined RDF resource
+			}
+			// locate attribURI in resourceShape
+			Property attribProperty = resourceShape.getProperty(attribURI);
+			if (attribProperty != null) {
+				// assign the enumeratedValues to the property
+				attribProperty.setAllowedValues(enumeratedValues_Hash);
+			} else {
+				logger.fatal("Unidentified enumerated attribute :"
+						+ attribId.getURI());
+			}
+		} else {
+			logger.fatal("Undefined enumerated attribute for : " + rdfSubject
+					+ " , " + propDefPrp);
+		}
+	}
+
+	private Hashtable<String, String> getEnumeratedValues_Hash(
+			com.hp.hpl.jena.rdf.model.Property rangePrp,
+			Hashtable<String, Hashtable<String, String>> identifiedEnumerationHash,
+			Statement rdfStatement, Resource rdfSubject) {
+		String enumerationId = findFirstObjectFor(rdfSubject, rangePrp)
+				.getURI();
+		// identify the enumeration (with the range rdfObject of the same
+		// rdfSubject)
+		Hashtable<String, String> currEnumeration = identifiedEnumerationHash
+				.get(enumerationId);
+		if (currEnumeration == null) {// load the enumeration values with
+										// new query
+			logger.debug("  Loading enumerated values hash table from Jazz server : "+enumerationId);
+			currEnumeration = loadEnumeratedValues((Resource) rdfStatement
+					.getObject());
+			identifiedEnumerationHash.put(enumerationId, currEnumeration);
+		}
+		return currEnumeration;
+	}
+
+	private Hashtable<String, String> loadEnumeratedValues(Resource rdfResource) {
+		Model enumeratedValues_rdfModel = null;
+		ArrayList<Resource> valueURI_rdfRsourceList;
+		Hashtable<String, String> enumeratedValuesHash;
+		com.hp.hpl.jena.rdf.model.Property allowedValue_RdfPrp;
+
+		allowedValue_RdfPrp = rdfModel.createProperty(OSLCConstants.OSLC_V2
+				+ "allowedValue");
+
+		// store the value URI to list
+		valueURI_rdfRsourceList = storeValueURIinArray(rdfResource,
+				allowedValue_RdfPrp);
+
+		// request RDF document holding the value URI labels into
+		// enumeratedValues_rdfModel
+		String firstVAlueURI = valueURI_rdfRsourceList.get(0).getURI();
+		enumeratedValues_rdfModel = requestRdfDocumentForValueURI(
+				enumeratedValues_rdfModel, firstVAlueURI);
+
+		// read label per valueURIrdfRsource and store in enumeratedValuesHash
+		enumeratedValuesHash = new Hashtable<String, String>();
+		storeLabelsAndTheirURIinHash(enumeratedValues_rdfModel,
+				valueURI_rdfRsourceList, enumeratedValuesHash);
+		return enumeratedValuesHash;
+	}
+
+	private void storeLabelsAndTheirURIinHash(Model enumeratedValues_rdfModel,
+			ArrayList<Resource> valueURI_rdfRsourceList,
+			Hashtable<String, String> enumeratedValuesHash) {
+		com.hp.hpl.jena.rdf.model.Property labelRdfProperty;
+		for (Resource enumeratedValueURI : valueURI_rdfRsourceList) {
+			labelRdfProperty = enumeratedValues_rdfModel
+					.createProperty(OSLCConstants.RDFS + "label");
+			NodeIterator lablesRdfIter = enumeratedValues_rdfModel
+					.listObjectsOfProperty(enumeratedValueURI, labelRdfProperty);
+			while (lablesRdfIter.hasNext()) {
+				RDFNode labelRdfNode = (RDFNode) lablesRdfIter.next();
+				logger.debug("   label='" + labelRdfNode.toString()
+						+ "'\t\t valueURI=" + enumeratedValueURI.getURI());
+				enumeratedValuesHash.put(labelRdfNode.toString(),
+						enumeratedValueURI.getURI());
+			}
+		}
+	}
+
+	private Model requestRdfDocumentForValueURI(
+			Model enumeratedValues_rdfModel, String enumeratedValues_URI) {
+		ClientResponse response;
+		InputStream is;
+		// String enumeratedValues_URI = valueURIrdfRsourceList.get(0).getURI();
+		try {
+			response = client.getResource(enumeratedValues_URI,
+					OSLCConstants.CT_RDF);
+			is = response.getEntity(InputStream.class);
+			enumeratedValues_rdfModel = ModelFactory.createDefaultModel();
+			enumeratedValues_rdfModel.read(is, enumeratedValues_URI);
+			response.consumeContent();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (OAuthException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return enumeratedValues_rdfModel;
+	}
+
+	private ArrayList<Resource> storeValueURIinArray(Resource rdfResource,
+			com.hp.hpl.jena.rdf.model.Property allowedValuePrp) {
+		ArrayList<Resource> valueURIrdfRsourceList;
+		valueURIrdfRsourceList = new ArrayList<Resource>();
+		NodeIterator rdfStatmentsIter = rdfModel.listObjectsOfProperty(
+				rdfResource, allowedValuePrp);
+		while (rdfStatmentsIter.hasNext()) {
+			Resource enumeratedValueURI = (Resource) rdfStatmentsIter.next();
+			valueURIrdfRsourceList.add(enumeratedValueURI);
+		}
+		return valueURIrdfRsourceList;
+	}
+
+	public void dumpResourceShape(String urlString) {
+
+		ClientResponse response;
+
+		try {
+			response = client.getResource(urlString, OSLCConstants.CT_RDF);
+			resourceShape = response
+					.getEntity(org.maroshi.client.model.ResourceShape.class);
+			ArrayList<org.maroshi.client.model.Property> attribsArr = new ArrayList<org.maroshi.client.model.Property>();
+			for (int i = 0; i < resourceShape.getProperties().length; i++) {
+				if (resourceShape.getProperties()[i].getRepresentation() == null) {
+					attribsArr.add(resourceShape.getProperties()[i]);
+				}
+			}
+			for (Property property : attribsArr) {
+				logger.debug("Attribute: " + property.getTitle());
+				logger.debug("   " + property.getValueType());
+				logger.debug("   " + property.getPropertyDefinition());
+				logger.debug("   " + property.getAllowedValuesRef());
+			}
+			response.consumeContent();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (OAuthException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void main(String[] args) {
@@ -105,25 +307,26 @@ public class InstanceShapeInterrogation {
 
 			// STEP 4: Get the URL of the OSLC ChangeManagement catalog
 			String catalogUrl = helper.getCatalogUrl();
-			logger.info("-- catalogUrl=" + catalogUrl); 
+			logger.info("-- catalogUrl=" + catalogUrl);
 			// STEP 5: Find the OSLC Service Provider for the project area we
 			// want to work with
 			String serviceProviderUrl = client.lookupServiceProviderUrl(
 					catalogUrl, projectArea);
 			logger.info("-- serviceProviderUrl=" + serviceProviderUrl);
-			
-			InstanceShapeInterrogation instanceShapeInterrogation = new InstanceShapeInterrogation(client);
-//			String urlString = "https://jazz.net/sandbox02-rm/resources/_gatgoTcVEeOYbalKlkVQRA";
-			String urlString = instanceShapeInterrogation.smapleInstanceShapeUri;
-			if (instanceShapeInterrogation
-					.loadModelForInstanceShape(urlString) == null){
+
+			InstanceShapeInterrogation oslcShape = new InstanceShapeInterrogation(
+					client);
+			// String urlString =
+			// "https://jazz.net/sandbox02-rm/resources/_gatgoTcVEeOYbalKlkVQRA";
+			String urlString = oslcShape.smapleInstanceShapeUri;
+
+			if (oslcShape.loadModelForInstanceShape(urlString) == null) {
 				logger.fatal("-- failed load RDF model.");
 				return;
 			}
-			instanceShapeInterrogation.dumpAllStatements();
+			oslcShape.identifyEnumeratedAttributes();
 
-
-		} catch (RootServicesException re) { 
+		} catch (RootServicesException re) {
 			logger.log(Level.FATAL,
 					"Unable to access the Jazz rootservices document at: "
 							+ rmContextUrl + "/rootservices", re);
