@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.lyo.oslc4j.core.annotation.OslcAllowedValue;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcDescription;
@@ -79,13 +80,15 @@ public final class Property extends AbstractResource implements Comparable<Prope
 		this.propertyDefinition = propertyDefinition;
 		this.valueType = valueType;
 	}
-
-	public void addAllowedValue(final String allowedValue, String valueURL) {
-		if (allowedValue == null){
-			allowedValues = new Hashtable<String, String>();
-		}
-		this.allowedValues.put(allowedValue, valueURL);
+	public boolean hasAllowedValues(){
+		if (allowedValues == null)
+			return false;
+		return true;
 	}
+	public Set<String> getAllowedValues(){
+		return allowedValues.keySet();
+	}
+
 	public String getAllowedValueURL(final String allowedValue) {
 		if (allowedValue == null){
 			return null;

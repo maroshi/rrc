@@ -1,7 +1,7 @@
 package org.maroshi.client.activity;
 
 import org.apache.log4j.Logger;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 
 public abstract class AbstractActivity {
 	static Logger logger = Logger.getLogger(AbstractActivity.class);
@@ -17,17 +17,17 @@ public abstract class AbstractActivity {
 	}
 
 	public void init() {
-		logger.debug(LoggerFactory.LINE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Init "
+		logger.debug(LoggerHelper.LINE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Init "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 	}
 
 	public String execute() {
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Execute "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Execute "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 		return ActivityConstants.EXE_SUCCESS;
 	}
 
@@ -35,20 +35,20 @@ public abstract class AbstractActivity {
 		if (context.getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Plan Next Activity "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Plan Next Activity "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 	}
 	public void finish() {
 		if (context.getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Finish "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Finish "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE);
-		logger.debug(LoggerFactory.NEW_LINE);
+		logger.debug(LoggerHelper.LINE);
+		logger.debug(LoggerHelper.NEW_LINE);
 
 	}
 

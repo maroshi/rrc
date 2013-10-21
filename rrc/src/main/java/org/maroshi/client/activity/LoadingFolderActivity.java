@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.resources.RmConstants;
 import org.maroshi.client.activity.DoActivity.DoActivityEnum;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 
 public class LoadingFolderActivity extends AbstractActivity {
 
@@ -66,7 +66,7 @@ public class LoadingFolderActivity extends AbstractActivity {
 		super.planNextActivity();
 		LoadingAttributesActivity loadingAttributesActivity = new LoadingAttributesActivity();
 		getSchedule().add(loadingAttributesActivity);
-		logger.debug(LoggerFactory.LINE_TITLE + "to -> "
+		logger.debug(LoggerHelper.LINE_TITLE + "to -> "
 				+ loadingAttributesActivity.getClass().getName());
 	}
 }

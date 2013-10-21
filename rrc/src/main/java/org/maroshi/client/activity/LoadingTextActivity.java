@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
 import org.eclipse.lyo.client.oslc.resources.RmConstants;
 import org.maroshi.client.activity.DoActivity.DoActivityEnum;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -95,7 +95,7 @@ public class LoadingTextActivity extends AbstractActivity {
 		if (getContext().getDoCommand() == DoActivityEnum.CREATE) {
 			LoadingFolderActivity loadingFolderActivity = new LoadingFolderActivity();
 			getSchedule().add(loadingFolderActivity);
-			logger.debug(LoggerFactory.LINE_TITLE + "to -> "
+			logger.debug(LoggerHelper.LINE_TITLE + "to -> "
 					+ loadingFolderActivity.getClass().getName());
 		}
 	}

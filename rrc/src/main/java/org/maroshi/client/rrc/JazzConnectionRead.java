@@ -39,6 +39,7 @@ import org.eclipse.lyo.oslc4j.core.model.Service;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.maroshi.client.util.CliOptionsBuilder;
 import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 import org.maroshi.client.util.VersionLocator;
 
 public class JazzConnectionRead {
@@ -149,14 +150,14 @@ public class JazzConnectionRead {
 
 				if (logger.getEffectiveLevel().isGreaterOrEqual(Level.DEBUG)) {
 					Option[] optionsArr = cmd.getOptions();
-					logger.debug(LoggerFactory.LINE);
+					logger.debug(LoggerHelper.LINE);
 					logger.debug("Argument list from all sources in order of entry.");
-					logger.debug(LoggerFactory.LINE_START);
+					logger.debug(LoggerHelper.LINE_START);
 					for (Option option : optionsArr) {
 						logger.debug(option.getLongOpt() + "="
 								+ option.getValue());
 					}
-					logger.debug(LoggerFactory.LINE_END);
+					logger.debug(LoggerHelper.LINE_END);
 				}
 			}
 			logCurrentVersion();
@@ -173,12 +174,12 @@ public class JazzConnectionRead {
 	public static void logCurrentVersion() {
 		logger.info("");
 		logger.info("");
-		logger.info(LoggerFactory.DOUBLE_LINE);
-		logger.info(LoggerFactory.DOUBLE_LINE);
+		logger.info(LoggerHelper.DOUBLE_LINE);
+		logger.info(LoggerHelper.DOUBLE_LINE);
 		logger.info("rrc1 version information:");
 		logger.info(VersionLocator.getVersion());
-		logger.info(LoggerFactory.DOUBLE_LINE);
-		logger.info(LoggerFactory.DOUBLE_LINE);
+		logger.info(LoggerHelper.DOUBLE_LINE);
+		logger.info(LoggerHelper.DOUBLE_LINE);
 		logger.info("");
 		logger.info("");
 	}

@@ -17,7 +17,7 @@ public class Context {
 	private JazzFormAuthClient jazzClient = null;
 	private String serviceProviderUrl = null;
 	private String requirementFactoryUrl = null;
-	private ResourceShape requirementInstanceShape = null;
+	private org.maroshi.client.model.ResourceShape requirementInstanceShape = null;
 	private String[] instanceShapesTitleStrArr = null;
 	private Requirement requirement = null;
 
@@ -86,11 +86,11 @@ public class Context {
 		this.requirementFactoryUrl = requirementFactoryUrl;
 	}
 
-	public ResourceShape getRequirementInstanceShape() {
+	public org.maroshi.client.model.ResourceShape getRequirementInstanceShape() {
 		return requirementInstanceShape;
 	}
 
-	public void setRequirementInstanceShape(ResourceShape requirementInstanceShape) {
+	public void setRequirementInstanceShape(org.maroshi.client.model.ResourceShape requirementInstanceShape) {
 		this.requirementInstanceShape = requirementInstanceShape;
 	}
 

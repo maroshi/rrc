@@ -20,11 +20,11 @@ import org.eclipse.lyo.client.oslc.jazz.JazzRootServicesHelper;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
 import org.eclipse.lyo.client.oslc.resources.RmUtil;
 import org.eclipse.lyo.oslc4j.core.model.CreationFactory;
-import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.Service;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.maroshi.client.activity.DoActivity.DoActivityEnum;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.model.ResourceShape;
+import org.maroshi.client.util.LoggerHelper;
 
 public class ConnectingToJazzActivty extends AbstractActivity {
 
@@ -117,7 +117,7 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		super.planNextActivity();
 		LoadingTextActivity loadingTextActivity = new LoadingTextActivity();
 		getSchedule().add(loadingTextActivity);
-		logger.debug(LoggerFactory.LINE_TITLE+"to -> "+loadingTextActivity.getClass().getName());
+		logger.debug(LoggerHelper.LINE_TITLE+"to -> "+loadingTextActivity.getClass().getName());
 	}
 
 	private boolean locateInstanceShape(String serviceProviderURI,
@@ -125,7 +125,7 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		ResourceShape requirmentInstanceShape;
 		boolean retVal = true;
 		try {
-			requirmentInstanceShape = RmUtil.lookupRequirementsInstanceShapes(
+			requirmentInstanceShape = ResourceShape.lookupRequirementsInstanceShapes(
 					serviceProviderURI, OSLCConstants.OSLC_RM_V2,
 					reqOslcResourceType, getContext().getJazzClient(),
 					reqTypeOptionVal);

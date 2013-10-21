@@ -2,7 +2,7 @@ package org.maroshi.client.activity;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.log4j.Logger;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 import org.maroshi.client.util.Msg;
 import org.maroshi.client.util.VersionLocator;
 
@@ -54,7 +54,7 @@ public class LogoActivity extends AbstractActivity{
 		if (hasOption(DoActivity.doOptionFlag)){
 			DoActivity doActivity = new DoActivity();
 			getSchedule().add(doActivity);
-			logger.debug(LoggerFactory.LINE_TITLE+"to -> "+doActivity.getClass().getName());
+			logger.debug(LoggerHelper.LINE_TITLE+"to -> "+doActivity.getClass().getName());
 		}
 		else{
 			logger.error("Missing required option --"+DoActivity.doOptionFlag);
