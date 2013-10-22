@@ -1,0 +1,30 @@
+# Long names of command line options
+# see optionsDef.xml for command line options
+# or run the program with -h
+# test 02
+  
+app.reqType=Sample Requirement Type    
+app.do=create 
+
+#req.folder.URI=https://jazz.net/sandbox02-rm/folders/_nzOw4TcWEeOYbalKlkVQRA
+req.title=Demo 20 create enumerated attributes
+#req.content= <b>Bold</b> and <i>italic</i> text accepted.
+#req.desc=Description this and that.
+#req.attr=   -String Attr= a sample string for testing
+#req.attr=   -Integer Attr= 1234
+#req.attr=   -Boolean Attr=false
+#req.attr=   -Date Attr=	
+#req.attr=   -Date range Attr=	
+#req.attr=   -DateTime Attr=	
+#req.attr=   -Duration Attr=	
+#req.attr=   -Enumeration multi valued Attr=Value 02
+#req.attr=   -Enumeration multi valued Attr=Value 01
+#req.attr=   -Enumeration single value Attr=	
+#req.attr=   -Float Attr=	
+#req.attr=   -Float range Attr=	
+#req.attr=   -Integer Attr=	1,234
+#req.attr=   -Integer range Attr=	
+#req.attr=   -String Attr=	a sample string for testing
+#req.attr=   -Time Attr=	
+#req.attr=   -User Attr=	
+#req.attr=    Severity=
