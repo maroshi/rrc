@@ -173,11 +173,6 @@ public class LoadingAttributesActivity extends AbstractActivity {
 				if (retVal == null){
 					logger.fatal("Passed value validation, yet fail locate enumerated value for "+LoggerHelper.quote(attrValue));
 				}
-//				try {
-//					resourceShaperPrp.setValueType(new URI("http://open-services.net/ns/core#Resource"));
-//				} catch (URISyntaxException e) {
-//					e.printStackTrace();
-//				}
 			}
 		}
 		return retVal;
