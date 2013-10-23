@@ -42,6 +42,10 @@ public class LoadingAttributesActivity extends AbstractActivity {
 	private ResourceShape resourcesShape;
 
 	private static final String XML_ELEMENT_NAME = "test_1";
+	final static String schemaStr = ""+
+	"<?xml version=\"1.0\"?> <xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"  "+
+	" > <xs:element name=\""+XML_ELEMENT_NAME+"\"  type=\"xs:float\"   ></xs:element></xs:schema>";
+
 
 	@Override
 	public void init() {
@@ -51,24 +55,34 @@ public class LoadingAttributesActivity extends AbstractActivity {
 				attrOptionFlag);
 		if (attrLinesArr == null) {
 			noAttrs = true;
+			return;
 		}
 		String attribLine = null;
 		// collect all the attribute into hash table.
 		// key - attribute name
 		// value - stored in Array list
 		attrHash = new Hashtable<String, ArrayList<String>>();
+		
 		for (int i = 0; i < attrLinesArr.length; i++) {
 			attribLine = attrLinesArr[i];
 			if (attribLine == null || attribLine.length() == 0) {
+				logger.error("Missing option value for: --" + attrOptionFlag);
 				failed = true;
 				break;
 			}
 			String[] splitedAttribLine = attribLine.split("=", 2);
-			if (splitedAttribLine == null || splitedAttribLine.length != 2) {
+			if (splitedAttribLine == null || splitedAttribLine.length < 2) {
+				logger.error("One \"=\" sign is requied for option --" + attrOptionFlag);
 				failed = true;
 				break;
 			}
 			String nameKey = splitedAttribLine[0].trim();
+			if (nameKey.length() == 0){
+				logger.error("AttributeName is reuired for option --"
+						+ attrOptionFlag);
+				failed = true;
+				break;
+			}
 			String valueStr = splitedAttribLine[1].trim();
 			ArrayList<String> valuesArr = attrHash.get(nameKey);
 			if (valuesArr == null) {
@@ -79,10 +93,11 @@ public class LoadingAttributesActivity extends AbstractActivity {
 				valuesArr.add(valueStr);
 			}
 		}
-		dumpAtriibutesHashToLogger();
 		if (failed) {
-			logger.error("Failed read name=value pair from: " + attribLine);
+			logger.error("Failed read attributeName=attributeValue pair from: " + LoggerHelper.quote(attribLine));
 		}
+		else
+			dumpAtriibutesHashToLogger();
 	}
 
 	@Override
@@ -92,6 +107,10 @@ public class LoadingAttributesActivity extends AbstractActivity {
 		if (failed)
 			return ActivityConstants.EXE_FAIL;
 		super.execute();
+		if (noAttrs){
+			logger.debug(LoggerHelper.LINE_TITLE+"  No Attributs.");
+			return ActivityConstants.EXE_SUCCESS;
+		}
 
 		resourcesShape = getContext().getRequirementInstanceShape();
 		EnumeratedAttributesLoader enumeratedAttributesLoader = new EnumeratedAttributesLoader(
@@ -106,8 +125,9 @@ public class LoadingAttributesActivity extends AbstractActivity {
 			if (p == null) {// undefined attribute name
 				reportUndefinedAttribute(attribName);
 				retVal = ActivityConstants.EXE_FAIL;
+				break;
 			} else {// assign the attribute value
-				retVal = assignAttribute(retVal, attribName);
+				retVal = assignAttribute(attribName);
 			}
 		}
 		return retVal;
@@ -118,13 +138,11 @@ public class LoadingAttributesActivity extends AbstractActivity {
 		if (getContext().getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		super.planNextActivity();
-		SubmitNewRequirementActivity submitNewRequirementActivity = new SubmitNewRequirementActivity();
-		getSchedule().add(submitNewRequirementActivity);
-		logger.debug(LoggerHelper.LINE_TITLE + "to -> "
-				+ submitNewRequirementActivity.getClass().getName());
+		nextActivityIs(new LoadingLinksActivity());
 	}
 
-	private String assignAttribute(String retVal, String attribName) {
+	private String assignAttribute(String attribName) {
+		String retVal = ActivityConstants.EXE_SUCCESS;
 		ArrayList<String> attrValuesList = attrHash.get(attribName);
 		if (attrValuesList != null) {
 			Iterator<String> attrValueIter = attrValuesList.iterator();
@@ -143,9 +161,9 @@ public class LoadingAttributesActivity extends AbstractActivity {
 						Requirement req = getContext().getRequirement();
 						Map<QName, Object> reqExtProperties = req
 								.getExtendedProperties();
-						
-//						resourcesShape.getProperty(attribDefinitionUri).setValueType(ValueType.Resource);
-//						attrValue="https://jazz.net/sandbox02-rm/types/_bbYogTZoEeOYbalKlkVQRA#3658147b-3b94-407e-8d04-93dfe20a255d";
+						// put the attribute in ExtendedProperties map
+						// key = attribDefinitionUri
+						// value = attrValue
 						reqExtProperties.put(qName, attrValue);
 					} else {
 						retVal = ActivityConstants.EXE_FAIL;
@@ -173,6 +191,8 @@ public class LoadingAttributesActivity extends AbstractActivity {
 				if (retVal == null){
 					logger.fatal("Passed value validation, yet fail locate enumerated value for "+LoggerHelper.quote(attrValue));
 				}
+//				try to submit the property as AnyResource to avoid type checking on the server
+				resourceShaperPrp.setValueType(ValueType.AnyResource);
 			}
 		}
 		return retVal;
@@ -207,7 +227,10 @@ public class LoadingAttributesActivity extends AbstractActivity {
 					vlidator.validate(testDoc);
 				} catch (SAXException e) {
 					retVal = false;
-					e.printStackTrace();
+					String attrName = resourceShapePrp.getTitle();
+					logger.error("Fail validate attribue value "+LoggerHelper.quote(attrValue)+
+							" for attribute "+LoggerHelper.quote(attrName )+ ".");
+					logger.error(e.getMessage());
 				} catch (IOException e) {
 					retVal = false;
 					e.printStackTrace();
@@ -220,6 +243,7 @@ public class LoadingAttributesActivity extends AbstractActivity {
 		return retVal;
 	}
 
+	/*
 	public static void main(String[] args) {
 		String xmlType = "int";
 		String attrValue = "123";
@@ -235,14 +259,7 @@ public class LoadingAttributesActivity extends AbstractActivity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static SAXSource loadSchemaFile(File xsdFile) {
-		return null;
-	}
-	final static String schemaStr1 = ""+
-	"<?xml version=\"1.0\"?> <xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"  "+
-	" > <xs:element name=\""+XML_ELEMENT_NAME+"\"  type=\"xs:float\"   ></xs:element></xs:schema>";
+	}*/
 
 	private static SAXSource buildSchema_SaxSource(String xmlType) {
 		String fragment = "<?xml version=\"1.0\"?> <xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"  "
@@ -290,7 +307,7 @@ public class LoadingAttributesActivity extends AbstractActivity {
 		String requirementType = resourcesShape.getTitle();
 		logger.error("Undefined attribute name "
 				+ LoggerHelper.quote(attribName) + " for requirement type "
-				+ LoggerHelper.quote(requirementType) + ".");
+				+ LoggerHelper.quote(requirementType) + " .");
 		StringBuffer allowedAttribs = new StringBuffer();
 		Iterator<String> iter = resourcesShape.getAttributeNames().iterator();
 		while (iter.hasNext()) {

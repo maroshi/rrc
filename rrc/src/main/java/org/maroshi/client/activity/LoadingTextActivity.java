@@ -93,10 +93,7 @@ public class LoadingTextActivity extends AbstractActivity {
 			return;
 		super.planNextActivity();
 		if (getContext().getDoCommand() == DoActivityEnum.CREATE) {
-			LoadingFolderActivity loadingFolderActivity = new LoadingFolderActivity();
-			getSchedule().add(loadingFolderActivity);
-			logger.debug(LoggerHelper.LINE_TITLE + "to -> "
-					+ loadingFolderActivity.getClass().getName());
+			nextActivityIs(new LoadingFolderActivity());
 		}
 	}
 

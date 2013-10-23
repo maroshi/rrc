@@ -43,7 +43,7 @@ public class SubmitNewRequirementActivity extends AbstractActivity {
 
 		if (creationResponse.getStatusCode() != HttpStatus.SC_CREATED) {
 			logger.error("Failed new requirement submission, with server return code: "
-					+ creationResponse.getStatusCode());
+					+ creationResponse.getStatusCode() + " "+ creationResponse.getMessage());
 			return ActivityConstants.EXE_FAIL;
 		}
 

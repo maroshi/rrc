@@ -1,30 +1,42 @@
-# Long names of command line options
+# Long names for command line options
 # see optionsDef.xml for command line options
 # or run the program with -h
-# test 02
   
+#----------------- Mandatory  ----------------------
+app.do=update 
 app.reqType=Sample Requirement Type    
-app.do=create 
+app.reqURI=https://jazz.net/sandbox02-rm/resources/_02izMjwZEeODFeaB_T95kg
 
+#----------------- Heading    ----------------------
 #req.folder.URI=https://jazz.net/sandbox02-rm/folders/_nzOw4TcWEeOYbalKlkVQRA
-req.title=Demo 20 create enumerated attributes
+req.title=Demo 30 play with system link
 #req.content= <b>Bold</b> and <i>italic</i> text accepted.
 #req.desc=Description this and that.
-#req.attr=   -String Attr= a sample string for testing
-#req.attr=   -Integer Attr= 1234
+
+#----------------- Attributes ----------------------
 #req.attr=   -Boolean Attr=false
-#req.attr=   -Date Attr=	
+#req.attr=   -Date Attr=	3045-09-21
 #req.attr=   -Date range Attr=	
-#req.attr=   -DateTime Attr=	
+#req.attr=   -DateTime Attr=	2012-11-22T20:33:17.775Z
 #req.attr=   -Duration Attr=	
 #req.attr=   -Enumeration multi valued Attr=Value 02
 #req.attr=   -Enumeration multi valued Attr=Value 01
-#req.attr=   -Enumeration single value Attr=	
-#req.attr=   -Float Attr=	
-#req.attr=   -Float range Attr=	
-#req.attr=   -Integer Attr=	1,234
-#req.attr=   -Integer range Attr=	
-#req.attr=   -String Attr=	a sample string for testing
-#req.attr=   -Time Attr=	
-#req.attr=   -User Attr=	
-#req.attr=    Severity=
+#req.attr=   -Enumeration single value Attr=Value 02
+#req.attr=   -Float Attr= 0   				
+#req.attr=   -Float range Attr = .5
+#req.attr=   -Integer Attr=	7890
+#req.attr=   -Integer range Attr = 23
+#req.attr=   -String Attr=	a sample string for testing 1
+#req.attr=   -Time Attr=	00:33:00
+#req.attr=   -User Attr=https://jazz.net/sandbox02-jts/users/psilva
+
+#----------------- Links ----------------------
+#req.link=    Link=  https://jazz.net/sandbox02-rm/resources/_zcMvoTtqEeODFeaB_T95kg
+#req.link=    Link=  https://jazz.net/sandbox02-rm/resources/_9MYBEjvqEeODFeaB_T95kg  
+#req.link=    Link=  https://jazz.net/sandbox02-rm/resources/_ESwN4TvrEeODFeaB_T95kg  
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_hKgi4TwYEeODFeaB_T95kg
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_qQl9oTwYEeODFeaB_T95kg  
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_vEH-ETwYEeODFeaB_T95kg  
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_0axSojwYEeODFeaB_T95kg  
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_pS4iwjwZEeODFeaB_T95kg  
+#req.link=    Custom Link=  https://jazz.net/sandbox02-rm/resources/_vNguIjwZEeODFeaB_T95kg  

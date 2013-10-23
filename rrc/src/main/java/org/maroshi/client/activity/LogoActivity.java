@@ -52,9 +52,7 @@ public class LogoActivity extends AbstractActivity{
 	public void planNextActivity() {
 		super.planNextActivity();
 		if (hasOption(DoActivity.doOptionFlag)){
-			DoActivity doActivity = new DoActivity();
-			getSchedule().add(doActivity);
-			logger.debug(LoggerHelper.LINE_TITLE+"to -> "+doActivity.getClass().getName());
+			nextActivityIs(new DoActivity());
 		}
 		else{
 			logger.error("Missing required option --"+DoActivity.doOptionFlag);

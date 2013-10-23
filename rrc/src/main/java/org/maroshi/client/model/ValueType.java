@@ -37,8 +37,8 @@ public enum ValueType {
 	XMLLiteral(OslcConstants.RDF_NAMESPACE + "XMLLiteral"),
 	Resource(OslcConstants.OSLC_CORE_NAMESPACE + "Resource"),
 	User(OslcConstants.OSLC_CORE_NAMESPACE + "Resource"),
-	LocalResource("http://www.ibm.com/xmlns/rdm/types/UserAttributeType");
-//    AnyResource(OslcConstants.OSLC_CORE_ENUM_NAMESPACE + "AnyResource"); // AnyResource not supported by OSLC4J
+	LocalResource("http://www.ibm.com/xmlns/rdm/types/UserAttributeType"),
+    AnyResource(OslcConstants.OSLC_CORE_NAMESPACE + "AnyResource"); // AnyResource not supported by OSLC4J
 
 	private final String uri;
 

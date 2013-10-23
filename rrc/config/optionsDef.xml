@@ -87,6 +87,13 @@
 		<hasArgs>true</hasArgs>
 		<required>false</required>
 	</option>
+	<option>
+		<short>aq</short>
+		<long>app.reqURI</long>
+		<description>Requirement artifact URI, subject for update or delete. </description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
 
 	<option>
 		<short>qt</short>
@@ -120,6 +127,13 @@
 		<short>qa</short>
 		<long>req.attr</long>
 		<description>Requirement's attribute. Multi occurring, name=value. Examples priority=low, development stage=plan phase </description>
+		<hasArgs>true</hasArgs>
+		<required>false</required>
+	</option>
+	<option>
+		<short>ql</short>
+		<long>req.link</long>
+		<description>Requirement's link. Multi occurring, linkName=linkURI. Examples Link To=https://jazz.net/sandbox02-rm/resources/_kTO8EjvQEeODFeaB_T95kg </description>
 		<hasArgs>true</hasArgs>
 		<required>false</required>
 	</option>

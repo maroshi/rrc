@@ -64,9 +64,6 @@ public class LoadingFolderActivity extends AbstractActivity {
 		if (getContext().getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		super.planNextActivity();
-		LoadingAttributesActivity loadingAttributesActivity = new LoadingAttributesActivity();
-		getSchedule().add(loadingAttributesActivity);
-		logger.debug(LoggerHelper.LINE_TITLE + "to -> "
-				+ loadingAttributesActivity.getClass().getName());
+		nextActivityIs(new LoadingAttributesActivity());
 	}
 }

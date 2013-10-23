@@ -1,5 +1,7 @@
 package org.maroshi.client.activity;
 
+import java.net.URI;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
@@ -20,6 +22,8 @@ public class Context {
 	private org.maroshi.client.model.ResourceShape requirementInstanceShape = null;
 	private String[] instanceShapesTitleStrArr = null;
 	private Requirement requirement = null;
+	private URI modifySubjectURI = null; // URI to artifact that will be modified (update/delete)
+	private String eTag = null;
 
 
 	public static Context instance() {
@@ -108,6 +112,22 @@ public class Context {
 
 	public void setRequirement(Requirement requirement) {
 		this.requirement = requirement;
+	}
+
+	public URI getModifySubjectURI() {
+		return modifySubjectURI;
+	}
+
+	public void setModifySubjectURI(URI modifySubjectURI) {
+		this.modifySubjectURI = modifySubjectURI;
+	}
+
+	public String geteTag() {
+		return eTag;
+	}
+
+	public void seteTag(String eTag) {
+		this.eTag = eTag;
 	}
 
 }
