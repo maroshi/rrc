@@ -2,20 +2,12 @@ package org.maroshi.client.activity;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 import net.oauth.OAuthException;
 
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.apache.wink.client.ClientResponse;
-import org.eclipse.lyo.client.oslc.OSLCConstants;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
 import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
@@ -36,13 +28,14 @@ public class SubmitUpdateRequirementActivity extends AbstractActivity {
 		
 		try {
 		// Get the eTAG, we need it to update
-		String etag = context.geteTag();
+		String etag = context.getETag();
 		updateResponse = context.getJazzClient().updateResource(
 				targetURI, 
 				targetReq, 
 				OslcMediaType.APPLICATION_RDF_XML,
 				OslcMediaType.APPLICATION_RDF_XML,
 				etag);
+		updateResponse.consumeContent();
 
 		} catch (IOException e) {
 			e.printStackTrace();

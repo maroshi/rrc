@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -37,46 +36,58 @@ public class LoadingSubjectActivity extends AbstractActivity {
 		} else
 			noUriOption = true;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public String execute() {
 		String retVal = ActivityConstants.EXE_SUCCESS;
 		if (noUriOption)
 			return ActivityConstants.EXE_FAIL;
-		
+
 		super.execute();
-		ClientResponse response; 
+		ClientResponse response;
 		try {
-			response = getContext().getJazzClient().getResource(reqUriStr, OSLCConstants.CT_RDF);
-			Requirement subjectRequiremnt = response
+			response = getContext().getJazzClient().getResource(reqUriStr,
+					OSLCConstants.CT_RDF);
+			Requirement subjReq = response
 					.getEntity(Requirement.class);
-			getContext().setRequirement(subjectRequiremnt);
 			String etag = response.getHeaders().getFirst(OSLCConstants.ETAG);
-			getContext().seteTag(etag);
-			
-			Map<QName, Object> reqExtProp = subjectRequiremnt.getExtendedProperties();
-			Iterator<Entry<QName, Object>> extPropIter = reqExtProp.entrySet().iterator();
-			int i = 0;
-			while (extPropIter.hasNext()) {
-				Map.Entry<javax.xml.namespace.QName, java.lang.Object> extPropEntry = (Map.Entry<javax.xml.namespace.QName, java.lang.Object>) extPropIter
-						.next();
-				QName key = extPropEntry.getKey();
-				logger.debug("Entry["+i+"] key= "+key.toString());
-				Object val = extPropEntry.getValue();
-				logger.debug("Entry["+i+"] val= "+val.getClass().getName());
-				i++;
-			}
-			subjectRequiremnt.setTitle("Maroshi 09");
-			
-			// get the custom link array
-			String linkURLstr = "https://jazz.net/sandbox02-rm/resources/_vNguIjwZEeODFeaB_T95kg";
-			URI instanceShapePropURI = getContext().getRequirementInstanceShape().getPropertyUri("Custom Link");
+			response.consumeContent();
+
+			getContext().setRequirement(subjReq);
+			getContext().setETag(etag);
+
+			Map<QName, Object> reqExtProp = subjReq
+					.getExtendedProperties();
+			// get the target link array
+			String[] linkURLstr = {
+					"https://jazz.net/sandbox02-rm/resources/_vNguIjwZEeODFeaB_T95kg",
+					"https://jazz.net/sandbox02-rm/resources/_qQl9oTwYEeODFeaB_T95kg" };
+			URI instanceShapePropURI = getContext()
+					.getRequirementInstanceShape().getPropertyUri("Link");
 			QName qName = URItoQName(instanceShapePropURI);
-			logger.debug("qName="+qName.toString());
-			reqExtProp.put(qName, new Link(new URI(linkURLstr)));
-			logger.debug("--- done ----");
+			logger.debug("    qName=" + qName.toString());
+			HashSet<Link> toLinkSet = new HashSet<Link>();
+			ArrayList<Link> linksArr = null;
+			Object propVAlue = reqExtProp.get(qName);
+
+//			linksArr = new ArrayList<Link>();
+//			linksArr.add(new Link(new URI(linkURLstr[0]), "link 1"));
+//			linksArr.add(new Link(new URI(linkURLstr[1]), "link 2"));
 			
+//			reqExtProp.put(qName, linksArr);
+//			reqExtProp.remove(qName);
+			
+//			 subjectRequiremnt.addSpecifies(new Link(new URI(linkURLstr[0]),"spec 1"));
+//			 subjectRequiremnt.addSpecifies(new Link(new URI(linkURLstr[1]),"spec 2"));
+//			 subjectRequiremnt.setSpecifies(null);
+//			Link anonLink = new Link(new URI(linkURLstr[0]), instanceShapePropURI.toString());
+//			subjectRequiremnt.addAnonymousLink(anonLink);
+			subjReq.setTitle("Test 09");
+
 //			response.consumeContent();
+
+			logger.debug("--- done ----");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (OAuthException e) {
@@ -87,6 +98,7 @@ public class LoadingSubjectActivity extends AbstractActivity {
 
 		return retVal;
 	}
+
 	@Override
 	public void planNextActivity() {
 		super.planNextActivity();

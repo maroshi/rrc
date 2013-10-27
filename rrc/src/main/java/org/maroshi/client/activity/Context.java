@@ -6,7 +6,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
-import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 
 public class Context {
 	static Logger logger = Logger.getLogger(Context.class);
@@ -110,8 +109,8 @@ public class Context {
 		return requirement;
 	}
 
-	public void setRequirement(Requirement requirement) {
-		this.requirement = requirement;
+	public void setRequirement(Requirement req) {
+		this.requirement = req;
 	}
 
 	public URI getModifySubjectURI() {
@@ -122,11 +121,11 @@ public class Context {
 		this.modifySubjectURI = modifySubjectURI;
 	}
 
-	public String geteTag() {
+	public String getETag() {
 		return eTag;
 	}
 
-	public void seteTag(String eTag) {
+	public void setETag(String eTag) {
 		this.eTag = eTag;
 	}
 

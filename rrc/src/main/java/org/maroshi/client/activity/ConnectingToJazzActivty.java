@@ -18,13 +18,11 @@ import org.eclipse.lyo.client.oslc.OSLCConstants;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.jazz.JazzRootServicesHelper;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
-import org.eclipse.lyo.client.oslc.resources.RmUtil;
 import org.eclipse.lyo.oslc4j.core.model.CreationFactory;
 import org.eclipse.lyo.oslc4j.core.model.Service;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.maroshi.client.activity.DoActivity.DoActivityEnum;
 import org.maroshi.client.model.ResourceShape;
-import org.maroshi.client.util.LoggerHelper;
 
 public class ConnectingToJazzActivty extends AbstractActivity {
 
