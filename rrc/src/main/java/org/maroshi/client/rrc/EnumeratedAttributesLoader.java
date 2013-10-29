@@ -19,6 +19,7 @@ import org.eclipse.lyo.client.oslc.OSLCConstants;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.jazz.JazzRootServicesHelper;
 import org.maroshi.client.model.Property;
+import org.maroshi.client.model.ResourceShape;
 import org.maroshi.client.util.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -29,21 +30,27 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-public class InstanceShapeInterrogation {
+public class EnumeratedAttributesLoader {
 	private final static String smapleInstanceShapeUri = "https://jazz.net/sandbox02-rm/types/_1ufI4TZoEeOYbalKlkVQRA";
 
-	static Logger logger = Logger.getLogger(InstanceShapeInterrogation.class);
+	static Logger logger = Logger.getLogger(EnumeratedAttributesLoader.class);
 	private Model rdfModel = null;
 	private JazzFormAuthClient client = null;
 	private ArrayList<Resource> shapePropertiesResourceArr = new ArrayList<Resource>();
 
 	private org.maroshi.client.model.ResourceShape resourceShape = null;
 
-	public InstanceShapeInterrogation(JazzFormAuthClient client) {
+	public EnumeratedAttributesLoader(JazzFormAuthClient client) {
 		this.client = client;
 	}
 
-	private Model loadModelForInstanceShape(String urlString) {
+	public Model loadRdfModelForInstanceShape(
+			ResourceShape resourceShape) {
+		this.resourceShape = resourceShape;
+		return loadRdfModelForInstanceShape(resourceShape.getAbout().toString());
+	}
+
+	private Model loadRdfModelForInstanceShape(String urlString) {
 		if (client == null)
 			return null;
 
@@ -56,11 +63,13 @@ public class InstanceShapeInterrogation {
 			rdfModel.read(is, urlString);
 			response.consumeContent();
 
-			// read RDF document into ResourceShape object with LYO
-			response = client.getResource(urlString, OSLCConstants.CT_RDF);
-			resourceShape = response
-					.getEntity(org.maroshi.client.model.ResourceShape.class);
-			response.consumeContent();
+			if (resourceShape == null) {
+				// read RDF document into ResourceShape object with LYO
+				response = client.getResource(urlString, OSLCConstants.CT_RDF);
+				resourceShape = response
+						.getEntity(org.maroshi.client.model.ResourceShape.class);
+				response.consumeContent();
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -83,7 +92,7 @@ public class InstanceShapeInterrogation {
 		return null;
 	}
 
-	public void identifyEnumeratedAttributes() {
+	public void loadEnumeratedAttributesToInstanceShape() {
 		com.hp.hpl.jena.rdf.model.Property allowedValuedPrp = rdfModel
 				.createProperty(OSLCConstants.OSLC_V2 + "allowedValues");
 		com.hp.hpl.jena.rdf.model.Property propDefPrp = rdfModel
@@ -95,7 +104,7 @@ public class InstanceShapeInterrogation {
 		StmtIterator itr = rdfModel.listStatements(null, allowedValuedPrp,
 				null, null);
 		Hashtable<String, Hashtable<String, String>> identifiedEnumerationHash = new Hashtable<String, Hashtable<String, String>>();
-		while (itr.hasNext()) { //each RDF triple with allowedValuedPrp
+		while (itr.hasNext()) { // each RDF triple with allowedValuedPrp
 			Statement rdfStatement = (Statement) itr.next();
 			Resource rdfSubject = rdfStatement.getSubject();
 			Hashtable<String, String> currEnumeration = getEnumeratedValues_Hash(
@@ -115,7 +124,8 @@ public class InstanceShapeInterrogation {
 			com.hp.hpl.jena.rdf.model.Property propDefPrp, Resource rdfSubject,
 			Hashtable<String, String> enumeratedValues_Hash, Resource attribId) {
 		if (attribId != null) {
-			logger.debug("Assigned enumerated values to attrib: " + attribId.getURI());
+			logger.debug("Assigned enumerated values to attrib: "
+					+ attribId.getURI());
 			URI attribURI = null;
 			try {
 				attribURI = new URI(attribId.getURI());
@@ -150,7 +160,8 @@ public class InstanceShapeInterrogation {
 				.get(enumerationId);
 		if (currEnumeration == null) {// load the enumeration values with
 										// new query
-			logger.debug("  Loading enumerated values hash table from Jazz server : "+enumerationId);
+			logger.debug("  Loading enumerated values hash table from Jazz server : "
+					+ enumerationId);
 			currEnumeration = loadEnumeratedValues((Resource) rdfStatement
 					.getObject());
 			identifiedEnumerationHash.put(enumerationId, currEnumeration);
@@ -238,7 +249,7 @@ public class InstanceShapeInterrogation {
 		return valueURIrdfRsourceList;
 	}
 
-	public void dumpResourceShape(String urlString) {
+	private void dumpResourceShape(String urlString) {
 
 		ClientResponse response;
 
@@ -314,17 +325,17 @@ public class InstanceShapeInterrogation {
 					catalogUrl, projectArea);
 			logger.info("-- serviceProviderUrl=" + serviceProviderUrl);
 
-			InstanceShapeInterrogation oslcShape = new InstanceShapeInterrogation(
+			EnumeratedAttributesLoader oslcShape = new EnumeratedAttributesLoader(
 					client);
 			// String urlString =
 			// "https://jazz.net/sandbox02-rm/resources/_gatgoTcVEeOYbalKlkVQRA";
 			String urlString = oslcShape.smapleInstanceShapeUri;
 
-			if (oslcShape.loadModelForInstanceShape(urlString) == null) {
+			if (oslcShape.loadRdfModelForInstanceShape(urlString) == null) {
 				logger.fatal("-- failed load RDF model.");
 				return;
 			}
-			oslcShape.identifyEnumeratedAttributes();
+			oslcShape.loadEnumeratedAttributesToInstanceShape();
 
 		} catch (RootServicesException re) {
 			logger.log(Level.FATAL,

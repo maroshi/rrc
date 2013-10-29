@@ -1,7 +1,14 @@
 package org.maroshi.client.activity;
 
+import java.net.URI;
+
+import javax.xml.namespace.QName;
+
 import org.apache.log4j.Logger;
-import org.maroshi.client.util.LoggerFactory;
+import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
+import org.maroshi.client.util.LoggerHelper;
+
+import com.hp.hpl.jena.rdf.arp.impl.Names;
 
 public abstract class AbstractActivity {
 	static Logger logger = Logger.getLogger(AbstractActivity.class);
@@ -17,17 +24,17 @@ public abstract class AbstractActivity {
 	}
 
 	public void init() {
-		logger.debug(LoggerFactory.LINE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Init "
+		logger.debug(LoggerHelper.LINE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Init "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 	}
 
 	public String execute() {
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Execute "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Execute "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 		return ActivityConstants.EXE_SUCCESS;
 	}
 
@@ -35,20 +42,20 @@ public abstract class AbstractActivity {
 		if (context.getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Plan Next Activity "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Plan Next Activity "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE);
 	}
 	public void finish() {
 		if (context.getExecutionResult() == ActivityConstants.EXE_FAIL)
 			return;
 		
-		logger.debug(LoggerFactory.LINE_TITLE);
-		logger.debug(LoggerFactory.LINE_TITLE + "Finish "
+		logger.debug(LoggerHelper.LINE_TITLE);
+		logger.debug(LoggerHelper.LINE_TITLE + "Finish "
 				+ this.getClass().getName());
-		logger.debug(LoggerFactory.LINE);
-		logger.debug(LoggerFactory.NEW_LINE);
+		logger.debug(LoggerHelper.LINE);
+		logger.debug(LoggerHelper.NEW_LINE);
 
 	}
 
@@ -80,5 +87,40 @@ public abstract class AbstractActivity {
 	}
 	protected boolean hasOption(String optFlag){
 		return context.getCommandLine().hasOption(optFlag);
+	}
+	protected void loggNextActivityDestination(AbstractActivity activityInstance){
+		logger.debug(LoggerHelper.LINE_TITLE + "  to -> "
+				+ activityInstance.getClass().getName());
+
+	}
+	protected void nextActivityIs(AbstractActivity activity){
+		getSchedule().add(activity);
+		loggNextActivityDestination(activity);	
+	}
+	
+	public static QName URItoQName(URI inpURI){
+		QName retVal = null;
+		String uriStr = inpURI.toString();
+		String nameSpace = null;
+		if (uriStr.startsWith(OslcConstants.OSLC_CORE_NAMESPACE)){
+			nameSpace = OslcConstants.OSLC_CORE_NAMESPACE;
+		}else if (uriStr.startsWith(OslcConstants.XML_NAMESPACE)){			
+			nameSpace = OslcConstants.XML_NAMESPACE;
+		}else if (uriStr.startsWith(OslcConstants.DCTERMS_NAMESPACE)){			
+			nameSpace = OslcConstants.DCTERMS_NAMESPACE;
+		}else if (uriStr.startsWith(OslcConstants.OSLC_DATA_NAMESPACE)){			
+			nameSpace = OslcConstants.OSLC_DATA_NAMESPACE;
+		}else if (uriStr.startsWith(OslcConstants.RDF_NAMESPACE)){			
+			nameSpace = OslcConstants.RDF_NAMESPACE;
+		}else if (uriStr.startsWith(OslcConstants.RDFS_NAMESPACE)){			
+			nameSpace = OslcConstants.RDFS_NAMESPACE;
+		}
+		if (nameSpace == null){
+			int lastSlashIdx = uriStr.lastIndexOf('/');
+			nameSpace = uriStr.substring(0, lastSlashIdx + 1);
+		}
+		String prefix = uriStr.substring(nameSpace.length());
+		retVal = new QName(nameSpace, prefix);
+		return retVal;
 	}
 }

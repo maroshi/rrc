@@ -5,6 +5,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
+import org.maroshi.client.util.LoggerHelper;
 import org.maroshi.client.util.Msg;
 
 public class DoActivity extends AbstractActivity {
@@ -51,6 +52,7 @@ public class DoActivity extends AbstractActivity {
 			retVal = ActivityConstants.EXE_FAIL;
 		}
 		getContext().setDoCommand(doActivityEnum);
+		logger.debug(LoggerHelper.LINE_TITLE+"  "+optionVal);
 		return retVal;
 	}
 
@@ -64,8 +66,7 @@ public class DoActivity extends AbstractActivity {
 		super.planNextActivity();
 		if (doActivityEnum != DoActivityEnum.READ ) {
 			if (hasOption(ConnectingToJazzActivty.reqTypeOptionFlag)){
-				AbstractActivity reqTypeActivity = new ConnectingToJazzActivty();
-				getSchedule().add(reqTypeActivity);				
+				nextActivityIs(new ConnectingToJazzActivty());
 			}else {
 				logger.error("Missing option value for: --" + ConnectingToJazzActivty.reqTypeOptionFlag);
 				

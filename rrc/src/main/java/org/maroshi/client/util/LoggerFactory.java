@@ -13,12 +13,6 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class LoggerFactory {
 	static private String CONSOLE_LAYOUT_PATTERN = "%-5p %d{HH:MM:ss} %c{2}: %m%n";
-	static final public  String LINE =        "--------------------------------------------------------------------------------";
-	static final public  String DOUBLE_LINE = "================================================================================";
-	static final public  String LINE_START =  "---START------------------------------------------------------------------------";
-	static final public  String LINE_END =    "---END--------------------------------------------------------------------------";
-	static final public  String LINE_TITLE =    "--- ";
-	static final public  String NEW_LINE =    "";
 	static private boolean isInitiated = false;
 	
 	public static void init() {

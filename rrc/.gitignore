@@ -1,2 +1,6 @@
 /target
+/client.log
+/rdfDefForEnumeratedValues
 /shapeRDF.txt
+/test.xsd
+/temp.txt

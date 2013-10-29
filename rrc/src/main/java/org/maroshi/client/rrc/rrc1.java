@@ -16,6 +16,7 @@ import org.maroshi.client.activity.LogoActivity;
 import org.maroshi.client.activity.Schedule;
 import org.maroshi.client.util.CliOptionsBuilder;
 import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.util.LoggerHelper;
 import org.maroshi.client.util.Msg;
 
 public class rrc1 {
@@ -78,14 +79,14 @@ public class rrc1 {
 	private static void logCliArgs(CommandLine cmd) {
 		if (logger.getEffectiveLevel().isGreaterOrEqual(Level.DEBUG)) {
 			Option[] optionsArr = cmd.getOptions();
-			logger.debug(LoggerFactory.LINE);
+			logger.debug(LoggerHelper.LINE);
 			logger.debug("Argument list from all sources in order of entry.");
-			logger.debug(LoggerFactory.LINE_START);
+			logger.debug(LoggerHelper.LINE_START);
 			for (Option option : optionsArr) {
 				logger.debug(option.getLongOpt() + "="
 						+ option.getValue());
 			}
-			logger.debug(LoggerFactory.LINE_END);
+			logger.debug(LoggerHelper.LINE_END);
 		}
 	}
 

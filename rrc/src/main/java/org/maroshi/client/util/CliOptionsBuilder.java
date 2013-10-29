@@ -43,7 +43,7 @@ public class CliOptionsBuilder {
 //			logger.debug("Root element "
 //					+ doc.getDocumentElement().getNodeName());
 			NodeList nodeLst = doc.getElementsByTagName("option");
-			logger.debug(LoggerFactory.DOUBLE_LINE);
+			logger.debug(LoggerHelper.DOUBLE_LINE);
 
 			logger.debug("Information for each option definition");
 
@@ -52,7 +52,7 @@ public class CliOptionsBuilder {
 				Node fstNode = nodeLst.item(s);
 
 				if (fstNode.getNodeType() == Node.ELEMENT_NODE) {
-					logger.debug(LoggerFactory.LINE_START);
+					logger.debug(LoggerHelper.LINE_START);
 
 					String shortName = extractElementValue(fstNode, "short");
 					if (shortName != null && shortName.length() > 0) {
@@ -86,10 +86,10 @@ public class CliOptionsBuilder {
 						logger.debug("option " + s + ": " + option.toString());
 						options.addOption(option);
 					}
-					logger.debug(LoggerFactory.LINE_END);
+					logger.debug(LoggerHelper.LINE_END);
 				}
 			}
-			logger.debug(LoggerFactory.DOUBLE_LINE);
+			logger.debug(LoggerHelper.DOUBLE_LINE);
 
 		} catch (IOException e) {
 			e.printStackTrace();

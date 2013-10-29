@@ -18,13 +18,11 @@ import org.eclipse.lyo.client.oslc.OSLCConstants;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.jazz.JazzRootServicesHelper;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
-import org.eclipse.lyo.client.oslc.resources.RmUtil;
 import org.eclipse.lyo.oslc4j.core.model.CreationFactory;
-import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.Service;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.maroshi.client.activity.DoActivity.DoActivityEnum;
-import org.maroshi.client.util.LoggerFactory;
+import org.maroshi.client.model.ResourceShape;
 
 public class ConnectingToJazzActivty extends AbstractActivity {
 
@@ -52,7 +50,8 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 	@Override
 	public void init() {
 		super.init();
-		if (isValidOptionValue(reqTypeOptionFlag) && isValidOptionValue(rmOptionFlag)
+		if (isValidOptionValue(reqTypeOptionFlag)
+				&& isValidOptionValue(rmOptionFlag)
 				&& isValidOptionValue(jtsOptionFlag)
 				&& isValidOptionValue(userOptionFlag)
 				&& isValidOptionValue(passwordOptionFlag)
@@ -99,7 +98,7 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		String reqOslcResourceType = requirement.getRdfTypes()[0].toString();
 		boolean isCreatingRequirement = (getContext().getDoCommand() == DoActivityEnum.CREATE);
 		if (isCreatingRequirement) {// if processing create request
-			// locate requirements factory 
+			// locate requirements factory
 			if (locateRequirmentFactory(serviceProviderURI, reqOslcResourceType) == false) {
 				return ActivityConstants.EXE_FAIL;
 			}
@@ -109,15 +108,19 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		if (locateInstanceShape(serviceProviderURI, reqOslcResourceType) == false) {
 			return ActivityConstants.EXE_FAIL;
 		}
-		logger.info("Succesfull locating requirement type metadata for \"" + reqTypeOptionVal + "\".");
+		logger.info("Succesfull locating requirement type metadata for \""
+				+ reqTypeOptionVal + "\".");
 		return ActivityConstants.EXE_SUCCESS;
 	}
+
 	@Override
 	public void planNextActivity() {
 		super.planNextActivity();
-		LoadingTextActivity loadingTextActivity = new LoadingTextActivity();
-		getSchedule().add(loadingTextActivity);
-		logger.debug(LoggerFactory.LINE_TITLE+"to -> "+loadingTextActivity.getClass().getName());
+		if (getContext().getDoCommand() == DoActivityEnum.CREATE) {
+			nextActivityIs(new LoadingTextActivity());
+		} else if (getContext().getDoCommand() == DoActivityEnum.UPDATE) {
+			nextActivityIs(new LoadingSubjectActivity());
+		}
 	}
 
 	private boolean locateInstanceShape(String serviceProviderURI,
@@ -125,12 +128,11 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		ResourceShape requirmentInstanceShape;
 		boolean retVal = true;
 		try {
-			requirmentInstanceShape = RmUtil.lookupRequirementsInstanceShapes(
-					serviceProviderURI, OSLCConstants.OSLC_RM_V2,
-					reqOslcResourceType, getContext().getJazzClient(),
-					reqTypeOptionVal);
-			getContext()
-					.setRequirementInstanceShape(requirmentInstanceShape);
+			requirmentInstanceShape = ResourceShape
+					.lookupRequirementsInstanceShapes(serviceProviderURI,
+							OSLCConstants.OSLC_RM_V2, reqOslcResourceType,
+							getContext().getJazzClient(), reqTypeOptionVal);
+			getContext().setRequirementInstanceShape(requirmentInstanceShape);
 			requirement.setInstanceShape(requirmentInstanceShape.getAbout());
 		} catch (ResourceNotFoundException e) {
 			errorReportUndefinedRequirementType(reqOslcResourceType);
@@ -167,7 +169,8 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 				reqTypesSB.append(", ");
 			}
 		}
-		logger.error("Undefined requirement type: --"+reqTypeOptionFlag+"=\"" + reqTypeOptionVal + "\"\n"
+		logger.error("Undefined requirement type: --" + reqTypeOptionFlag
+				+ "=\"" + reqTypeOptionVal + "\"\n"
 				+ "Defined requirement types are: " + reqTypesSB.toString());
 	}
 
@@ -280,7 +283,8 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 					.lookupServiceProviderUrl(catalogUrl, projectOptionVal);
 			getContext().setServiceProviderUrl(serviceProviderUrl);
 		} catch (ResourceNotFoundException e) {
-			logger.error("Undefined project area: --"+projectOptionFlag+"=\"" + projectOptionVal + "\"\n");
+			logger.error("Undefined project area: --" + projectOptionFlag
+					+ "=\"" + projectOptionVal + "\"\n");
 			e.printStackTrace();
 			retVal = false;
 		} catch (IOException e) {
@@ -307,7 +311,8 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 			helper = new JazzRootServicesHelper(rmOptionVal,
 					OSLCConstants.OSLC_RM_V2);
 		} catch (RootServicesException e) {
-			logger.error("Undefined RRC server: --"+rmOptionFlag+"=\"" + rmOptionVal + "\"\n");
+			logger.error("Undefined RRC server: --" + rmOptionFlag + "=\""
+					+ rmOptionVal + "\"\n");
 			logger.error("Failed connect to: " + rmOptionVal);
 			e.printStackTrace();
 			return false;
@@ -321,7 +326,7 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 		JazzFormAuthClient client = helper.initFormClient(userOptionVal,
 				passwordOptionVal, jtsOptionVal);
 		getContext().setJazzClient(client);
-		if (client == null){
+		if (client == null) {
 			logger.error("Failed create JazzFormAuthClient.");
 			reportFailedLogin();
 			return false;
@@ -347,10 +352,9 @@ public class ConnectingToJazzActivty extends AbstractActivity {
 
 	private void reportFailedLogin() {
 		logger.error("User '" + userOptionVal + "' failed login to "
-				+ jtsOptionVal+
-				"\n"+
-				"JTS server: --"+jtsOptionFlag+"=\"" + jtsOptionVal + "\"\n"+
-				"User      : --"+userOptionFlag+"=\"" + userOptionVal + "\"\n"+
-				"Password  : --"+passwordOptionFlag+"=\"????????\"");
+				+ jtsOptionVal + "\n" + "JTS server: --" + jtsOptionFlag
+				+ "=\"" + jtsOptionVal + "\"\n" + "User      : --"
+				+ userOptionFlag + "=\"" + userOptionVal + "\"\n"
+				+ "Password  : --" + passwordOptionFlag + "=\"????????\"");
 	}
 }

@@ -1,10 +1,11 @@
 package org.maroshi.client.activity;
 
+import java.net.URI;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
 import org.eclipse.lyo.client.oslc.jazz.JazzFormAuthClient;
 import org.eclipse.lyo.client.oslc.resources.Requirement;
-import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 
 public class Context {
 	static Logger logger = Logger.getLogger(Context.class);
@@ -17,9 +18,11 @@ public class Context {
 	private JazzFormAuthClient jazzClient = null;
 	private String serviceProviderUrl = null;
 	private String requirementFactoryUrl = null;
-	private ResourceShape requirementInstanceShape = null;
+	private org.maroshi.client.model.ResourceShape requirementInstanceShape = null;
 	private String[] instanceShapesTitleStrArr = null;
 	private Requirement requirement = null;
+	private URI modifySubjectURI = null; // URI to artifact that will be modified (update/delete)
+	private String eTag = null;
 
 
 	public static Context instance() {
@@ -86,11 +89,11 @@ public class Context {
 		this.requirementFactoryUrl = requirementFactoryUrl;
 	}
 
-	public ResourceShape getRequirementInstanceShape() {
+	public org.maroshi.client.model.ResourceShape getRequirementInstanceShape() {
 		return requirementInstanceShape;
 	}
 
-	public void setRequirementInstanceShape(ResourceShape requirementInstanceShape) {
+	public void setRequirementInstanceShape(org.maroshi.client.model.ResourceShape requirementInstanceShape) {
 		this.requirementInstanceShape = requirementInstanceShape;
 	}
 
@@ -106,8 +109,24 @@ public class Context {
 		return requirement;
 	}
 
-	public void setRequirement(Requirement requirement) {
-		this.requirement = requirement;
+	public void setRequirement(Requirement req) {
+		this.requirement = req;
+	}
+
+	public URI getModifySubjectURI() {
+		return modifySubjectURI;
+	}
+
+	public void setModifySubjectURI(URI modifySubjectURI) {
+		this.modifySubjectURI = modifySubjectURI;
+	}
+
+	public String getETag() {
+		return eTag;
+	}
+
+	public void setETag(String eTag) {
+		this.eTag = eTag;
 	}
 
 }
